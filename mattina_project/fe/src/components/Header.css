@@ -1,0 +1,77 @@
+*{margin: 0; padding: 0;}
+li{list-style: none;}
+.header{
+  /* width: 100%;
+  height: 64px;
+  display: flex;
+  background-color: white;
+  position: fixed;
+  z-index: 1000; */
+  width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 8px 12px;
+
+}
+.header-left{
+  /* width: 50%;  */
+   height: 100%;
+   float: left;
+}
+.header-right{
+  float: right;
+}
+.header-left img{
+  width:300px;
+  height:60px;
+
+  
+}
+
+.toggel_icons{
+    /* width: 50%;
+    height: 100%;*/
+    display: flex;
+    color: white;
+    padding-left: 0;
+}
+.toggel_icons li{
+  /* display: flex;
+  justify-content: flex-end; */
+  padding: 8px 12px;
+}
+.btn{
+  padding: 23px 30px 20px 30px;
+  color:#333;
+  outline: 0;
+}
+.btn:hover{ box-shadow: 0 80px 0 0 rgb(43, 142, 223) inset; opacity: 0.7;}
+
+
+.toggle-btn{
+  display: none;
+
+}
+.toggle-btn:hover{
+  background-color: darkgrey;
+  opacity: 0.5;
+}
+@media screen and (max-width: 768px){
+  .toggel_icons{
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .toggle-btn{
+    display: block;
+    right: 10px;
+    position: absolute;
+  }
+.toggel_icons.active{
+    display: flex;
+}
+}
