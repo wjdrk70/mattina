@@ -1,22 +1,32 @@
 <template>
-  <div class="api">
-    <div class="guest_info"></div>
-    <div class="list_header">
-      <div class="list_header_leftinside">
-        <div class="airportinfo_header">
-          {{this.$route.query.departureInput}}({{this.$route.query.departure}}) - 
-          {{this.$route.query.arrivalInput}}({{this.$route.query.arrival}})</div>
-        <div class="carbin-info">
-          성인 : {{this.$route.query.adults}} 어린이: {{this.$route.query.children}}  
-          유아 : {{this.$route.query.infants}} | {{this.$route.query.flightClass}}</div> 
+  <div class="all_list">
+    <FlightSearchBox/>
+     <div class="ticket_wrap">
+     <div class="ticket_info">
+      <div class="ticket_contents1">        
+        <div><h3><i><img src="../assets/airplane1.svg"></i>가는 여정</h3></div>
+        {{this.$route.query.departureInput}}  
+         <i class="fas fa-long-arrow-alt-right fa-lg righticon"></i>      
+        {{this.$route.query.arrivalInput}}
+      </div>     
+      <div v-if="InDepTime" class="ticket_contents2">
+       <div><h3><i><img src="../assets/airplane1.svg"></i>오는 여정</h3></div>
+          {{this.$route.query.arrivalInput}}
+         <i class="fas fa-long-arrow-alt-right fa-lg righticon"></i>     
+        {{this.$route.query.departureInput}} 
       </div>
-      <div class="list_header_rightinside">
-        <div class="deptime-info">{{this.$route.query.leavetime}}</div>
-        <div class="arrtime-info">{{this.$route.query.cometime}}</div>
+     </div>
+   </div> 
+  <div class="api">  
+    <!--list_header-->
+       <div  v-if="loading">
+          <div>
+         <img src="../assets/loading3.gif" style="width:100%; height:500px;">
+          </div>
       </div>
-    </div>
-    <div class="list_body">
-      <div class="side_empty"></div>
+    
+    <div class="list_body"  v-if="!loading">
+      <!-- <div class="side_empty"></div> -->
       <div class="sidebar">
       <div class="sidebar_header">
         <div class="turn_title">경유</div>
@@ -24,168 +34,175 @@
           <!-- <v-checkbox v-model="selected" color="info" label="직항" value="0" @change="updateResult"></v-checkbox>
           <v-checkbox v-model="selected" color="info" label="1회경유" value="1" @change="updateResult"></v-checkbox>
           <v-checkbox v-model="selected" color="info" label="2회경유" value="2" @change="updateResult"></v-checkbox> -->
-         <label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="0" checked>직항</label>
-         <label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="1" checked>1회경유</label>
-         <label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="2" checked>2회경유</label>
+        <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="0" checked @change="updateResult">직항</label></div>
+         <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="1" checked @change="updateResult">1회경유</label></div>
+         <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="2" checked @change="updateResult">2회경유</label></div>
         </div>
       </div>
 
       <div class="sidebar_center">
         <div class="starttime_title">출발 시간대 설정</div>
         <div class="sidebar_slide">
-          <span>가는날 출발시간</span>
-          <span class="sidebar_slide_departure">{{outboundDepStartTime}} - {{outboundDepEndTime}}</span>
-          <vs-slider v-model="outrange" :min="min" :max="max" @change="onChange($event)" />
-
+          <div class="sidebar_slide_content">   
+            <span>가는날 출발시간</span>
+            <span class="sidebar_slide_departure">{{outboundDepStartTime}} - {{outboundDepEndTime}}</span>
+          </div>
+            <vs-slider v-model="outrange" :min="min" :max="max" @change="onChange($event)"></vs-slider>
           <div v-if="this.$route.query.cometime !=''">
-            <span>오는날 출발시간</span>
-            <span class="sidebar_slide_arrival">{{inboundDepStartTime}} - {{inboundDepEndTime}}</span>
-            <vs-slider v-model="inrange" :min="min" :max="max" @change="onChange($event)" />
+            <div class="sidebar_slide_content">
+              <span>오는날 출발시간</span>
+              <span class="sidebar_slide_arrival">{{inboundDepStartTime}} - {{inboundDepEndTime}}</span>
+            </div>
+              <vs-slider v-model="inrange" :min="min" :max="max" @change="onChange($event)"></vs-slider>
           </div>
         </div>
       </div>
       <div class="sidebar_bottom">
         <div class="airport_title">항공사 선택</div>
+        <div class="airport_title_box">
         <div v-for="i in airSelName.length" :key="i">
-          <label style="font-size:16px; color:black;"><input type="checkbox" v-model="airCheckName" :value="airSelName[i-1]">{{airSelName[i-1]}}</label>
+          <label style="font-size:16px; color:black;"><input type="checkbox" v-model="airCheckName" :value="airSelName[i-1]" @change="updateResult">{{airSelName[i-1]}}</label>
           <!-- <v-checkbox v-model="airCheckName" :label="airSelName[i]" :value="airSelName[i]"></v-checkbox> -->
         </div>
+        </div>
+          <div class="airport_title_button">
+          <button @click="selectAll" >모두 선택</button>
+          <button @click="reset" >모두 해제</button>
+          </div>
       </div>
       </div>
       <div class="center_empty"></div>
     <!--항공권 리스트 티켓-->
    <div class="flightlist">
-      <div v-if="loading">
-          <div>
-         <img src="../assets/blue.gif">
-          </div>
-          </div>
-        <div style="width: 100%;  padding: 0px;" v-if="!loading">
-        <div class="ticket_info">          
-            <div class="butt">
+   
+        <div class="container_flight" style="width: 100%;  padding: 0px;">
+      
+            <div class="count_box">
            <div class="total">총 {{flightsNum}} 개의 검색 결과</div>
-              <div class="but">
-                <v-btn class="tul" v-model="sortPrice" @click="OptionTypeUpdate(0)">최저가 순</v-btn>    
-                <v-btn class="tul" v-model="sortDuration" @click="OptionTypeUpdate(1)">최단시간 순</v-btn>
-                <v-btn class="tul" v-model="sortOutbound">빠른출국 순</v-btn> 
-                <v-btn class="tul" v-model="sortInbound" v-if="inDeptime">빠른귀국 순</v-btn> 
-                <!-- <v-btn v-for="(sortSelect,i) in sortSelects" :key="i.bool">{{sortSelect.type}}</v-btn> -->
-                
-              </div> 
+              <div class="sort">
+               <button v-bind="sortPrice" @click="OptionTypeUpdate(0)">최저가 순</button>
+                <button v-bind="sortDuration" @click="OptionTypeUpdate(1)">최단시간 순</button>
+                <button v-bind="sortOutbound" @click="OptionTypeUpdate(2)">빠른출국 순</button>
+                <button v-bind="sortInbound" @click="OptionTypeUpdate(3)" v-if="InDepTime">빠른귀국 순</button>
+              </div>
             </div>
-          </div>
-      <div v-esle class="flight_ticket" v-for="i in flights.length>limit?limit:flights.length" :key="i">
-        <div class="show_ticket">
-        <div class="outbound" >          
+      
+          
+      <div class="flight_ticket" v-for="(f,i) in flights"  :key="i">
+        <div class="show_ticket" v-if="i<limit">
+        <div class="total_bound">
+        <div class="outbound">
           <div class="flight_img">
-            <span><img :src="flights[i].OutCarrierImg"></span>
-            <span class="flight_name">{{flights[i].OutCarrierName}}</span> 
+            <span>{{i}}<img :src="f.OutCarrierImg"></span>
+            <span class="flight_name">{{f.OutCarrierName}}</span>
           </div>
         <div class="center">
           <div>
-        <span class="center_timefont">{{flights[i].OutDepTime}}</span>
-        <span class="center_codefont">{{flights[i].OriginAirCode}}</span>
+        <span class="center_timefont">{{f.OutDepTime}}</span>
+        <span class="center_codefont">{{f.OriginAirCode}}</span>
           </div>
         </div>
         <div>
           <div class="flights_duration">
-              <div class="flights_duration_time">{{flights[i].OutDuration}}</div>                     
+              <div class="flights_duration_time">{{f.OutDuration}}</div>
               <div class="grid">
                 <hr>
                    <div class="plane">
                      <i class="fa fa-plane fa-sm"></i>
                    </div>
-              </div>               
-              <div class="flights_transfer">
-               <div v-if="flights[i].OutStopNum===0">직항</div>
-              <div v-else>이건 아바{{flights[i].OutStopNum}}회 경유</div>
-              <div v-for="stop in flights[i].OutStopAll" :key="stop">{{stop.code}}</div>              
               </div>
-                                       
+              <div class="flights_transfer">
+               <div v-if="f.OutStopNum===0">직항</div>
+              <div v-else>이건 아바{{f.OutStopNum}}회 경유</div>
+              <div v-for="stop in f.OutStopAll" :key="stop">{{stop.code}}</div>
+              </div>
+
           </div>
         </div>
-        
+
         <div class="center">
             <div>
-            <span class="center_timefont">{{flights[i].OutArrTime}}</span>
-            <span class="center_codefont">{{flights[i].DestAirCode}}</span> 
+            <span class="center_timefont">{{f.OutArrTime}}</span>
+            <span class="center_codefont">{{f.DestAirCode}}</span>
             </div>
-        </div>        
+        </div>
         </div>
         <div class="inbound" v-if="InDepTime">
           <div class="flight_img">
-            <span><img :src="flights[i].InCarrierImg"></span>
-            <span class="flight_name">{{flights[i].InCarrierName}}</span> 
+            <span><img :src="f.InCarrierImg"></span>
+            <span class="flight_name">{{f.InCarrierName}}</span>
           </div>
           <div class="center">
             <div>
-            <span class="center_timefont">{{flights[i].InDepTime}}</span>
-            <span class="center_codefont">{{flights[i].DestAirCode}}</span>
+            <span class="center_timefont">{{f.InDepTime}}</span>
+            <span class="center_codefont">{{f.DestAirCode}}</span>
             </div>
           </div>
           <div class="flights_duration">
-              <div class="flights_duration_time">{{flights[i].InDuration}}</div>
+              <div class="flights_duration_time">{{f.InDuration}}</div>
               <div class="grid">
                 <hr>
                    <div class="plane">
                      <i class="fa fa-plane fa-sm"></i>
                    </div>
-              </div> 
-              <div class="flights_transfer">           
-                    <div v-if="flights[i].InStopNum===0">직항</div>
-                    <div v-else>이건 인바{{flights[i].InStopNum}}회 경유</div>
-                    <div v-for="stop in flights[i].InStopAll" :key="stop">{{stop.code}}</div>
-                </div> 
+              </div>
+              <div class="flights_transfer">
+                    <div v-if="f.InStopNum===0">직항</div>
+                    <div v-else>이건 인바{{f.InStopNum}}회 경유</div>
+                    <div v-for="stop in f.InStopAll" :key="stop">{{stop.code}}</div>
+                </div>
           </div>
           <div class="center">
             <div>
-           <span class="center_timefont">{{flights[i].InArrTime}}</span>
-           <span class="center_codefont">{{flights[i].OriginAirCode}}</span>
+           <span class="center_timefont">{{f.InArrTime}}</span>
+           <span class="center_codefont">{{f.OriginAirCode}}</span>
             </div>
            </div>
         </div>
-      </div> 
+      </div>
+      <div></div>
       <div class="selectprice">
         <div class="round" :style="`${InDepTime? 'margin: 45% 25% 45% 26%;':'margin:19%;'}`">
               <div class="price">
-              <span class="price_box" >{{flights[i].Symbol}}{{flights[i].RoundPrice}}</span>
-              <span class=price_button><v-btn :href="flights[i].RoundPriceUrl">선택</v-btn></span>            
+              <span class="price_box" >{{f.Symbol}}{{f.RoundPrice}}</span>
+              <span class=price_button><v-btn :href="f.RoundPriceUrl">선택</v-btn></span>
               </div>
            </div>
-        </div>
+        </div>       
+    </div>    
     </div>
+    <div class="btnMore">
+       <button @click="moreList">더 많은 결과 표시</button>
     </div>
-     <div>
-       <v-btn @click="moreList">더 보기</v-btn>
-     </div>
-     <div class="side_empty"></div>
-    
+  </div>  
     </div>
   </div>
   </div>
+  </div>
+ 
 </template>
 
 <script>
+import FlightSearchBox from '../components/FlightSearchBox'
 import qs from 'qs'
 export default {
   name: "FlightList",
-  props: {
-    limit: {type: Number, default: 10},
-    outboundDepStartTime: { type: String, default: "00:00" },
-    outboundDepEndTime: { type: String, default: "24:00" },
-    inboundDepStartTime: { type: String, default: "00:00" },
-    inboundDepEndTime: { type: String, default: "24:00" },
-    pageIndex:{type:Number,default:0},
-    pageSize:{type:Number,default:10},
-    optionTypeIndex:{type:Number,default:0},
-  },
+
   data() {
     return {
       loading:false,
       flights:[
-    
+
       ],
       flightsNum:0,
+    limit:10,
+    outboundDepStartTime:"00:00" ,
+    outboundDepEndTime: "24:00",
+    inboundDepStartTime:"00:00" ,
+    inboundDepEndTime:  "24:00" ,
+    pageIndex:0,
+    pageSize:10,
+    optionTypeIndex:0,
       selected: ["0","1","2"],
       min: 0,
       max: 1440,
@@ -230,6 +247,10 @@ export default {
       [],
       [],
     ],
+    stopType:[
+      {text:'&stops=0'},
+      {text:'&stops=1'},
+    ],
 
       optionType: [
             {text: '&sortType=price&sortOrder=asc'},//최저가
@@ -237,7 +258,7 @@ export default {
             {text: '&sortType=outbounddeparttime&sortOrder=asc'},//출국출발시간
             {text: '&sortType=inbounddeparttime&sortOrder=asc'},//귀국출발시간
           ],
-  
+
     };
   },
   mounted() {
@@ -247,13 +268,17 @@ export default {
     this.getFligths(3,0)
 
   },
-  
+  components:{
+    FlightSearchBox
+  },
+
   methods: {
     onChange(value) {
       this.outboundDepStartTime = this.timeTransSlider(this.outrange[0]);
       this.outboundDepEndTime = this.timeTransSlider(this.outrange[1]);
       this.inboundDepStartTime = this.timeTransSlider(this.inrange[0]);
       this.inboundDepEndTime = this.timeTransSlider(this.inrange[1]);
+      this.updateResult()
     },
     timeTransSlider(time) {
       let hour, minute, result;
@@ -269,40 +294,48 @@ export default {
       } else {
         hour = hour;
         if (minute === 0) {
-          return `${hour}:00`; 
+          return `${hour}:00`;
         } else {
           return `${hour}:30`;
         }
       }
     },
+      selectAll(){
+      this.airCheckName = this.airSelName;
+    },
+    reset(){
+        this.airCheckName = [];
+    },
+
     getFligths(optionTypeIndex,addType=0){
         if(optionTypeIndex===0){
-         
-            this.loading=true     
-           
+
+            this.loading=true
+
         }
-    
+
       this.pageIndex=0
       this.pageSize=1000
       const apiUrl="https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/pricing/v1.0"
       let data={
         "country": "KR",
-		    "currency": "KRW",
+        "currency": "KRW",
         "locale": "ko-KR",
         "outboundDate": this.$route.query.leavetime,
-        "cabinClass":this.$route.query.flightClass, 	   
-		    "adults": this.$route.query.adults,
-		    "children": this.$route.query.children,
-		    "infants": this.$route.query.infants,
-		    "originPlace": `${this.$route.query.departure}-sky`,
-		    "destinationPlace": `${this.$route.query.arrival}-sky`,
-	
+        "cabinClass":this.$route.query.flightClass,
+        "adults": this.$route.query.adults,
+        "children": this.$route.query.children,
+        "infants": this.$route.query.infants,
+        "originPlace": `${this.$route.query.departure}-sky`,
+        "destinationPlace": `${this.$route.query.arrival}-sky`,
+
+
       }
 
       let inboundDate = this.$route.query.cometime
         console.log(inboundDate)
       if(inboundDate!=='') data['inboundDate']=inboundDate
-      
+
       this.$http({
         method: 'POST',
         url    : apiUrl,
@@ -311,7 +344,7 @@ export default {
         headers:{
              "content-type":"application/x-www-form-urlencoded",
              "x-rapidapi-host":"skyscanner-skyscanner-flight-search-v1.p.rapidapi.com",
-             "x-rapidapi-key":"e2b10f9ffdmsh38e70977a0e7bbdp11f444jsn3f4b92c83b27"
+             "x-rapidapi-key":"8f9cdf9352mshe66630d8c7fa219p1a9887jsnfb3541a87b9c"
         }
       })
       .then(res=>{
@@ -329,7 +362,9 @@ export default {
         return sessionKey
 
       })
-      .then(sessionKey =>{
+      .then(sessionKey=>{
+        let pedd=new Promise((resolve,reject)=>setTimeout(resolve(sessionKey)),5000)
+      pedd.then(sessionKey =>{
         console.log(sessionKey)
         const optionUrl='https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/pricing/uk2/v1.0/'
         if(optionTypeIndex<4){
@@ -341,30 +376,29 @@ export default {
           method: 'GET',
           url: optionUrl+sessionKey+option,
           headers: {
-            "content-type":"application/x-www-form-urlencoded",
-            "x-rapidapi-host": "skyscanner-skyscanner-flight-search-v1.p.rapidapi.com",
-		        "x-rapidapi-key": "e2b10f9ffdmsh38e70977a0e7bbdp11f444jsn3f4b92c83b27"
+        "content-type":"application/x-www-form-urlencoded",
+             "x-rapidapi-host":"skyscanner-skyscanner-flight-search-v1.p.rapidapi.com",
+             "x-rapidapi-key":"8f9cdf9352mshe66630d8c7fa219p1a9887jsnfb3541a87b9c"
           }
         })
         .then(res=>{
           console.log(res)
           if(addType>1){
           this.Symbol=res.data.Currencies[0].Symbol
-      
+
            for(let i=0; i<res.data.Places.length; i++){
             if(res.data.Places[i].Id==res.data.Query.OriginPlace){
            this.OriginAirCode=res.data.Places[i].Code
            this.OriginAirName=res.data.Places[i].Name
-        
+
             }
             if(res.data.Places[i].Id==res.data.Query.DestinationPlace){
                  this.DestAirCode=res.data.Places[i].Code
                  this.DestAirName=res.data.Places[i].Name
-          
+
             }
 
            }
-         
 
           for (let j=0; j<res.data.Itineraries.length; j++) {
 
@@ -373,30 +407,34 @@ export default {
            for(let i=0; i<res.data.Itineraries[j].PricingOptions.length; i++){
                  option={'Price': Number(Math.round(res.data.Itineraries[j].PricingOptions[i].Price)).toLocaleString(),
                           'Deeplink': res.data.Itineraries[j].PricingOptions[i].DeeplinkUrl
-                   
+
                  }
                  Options.push(option)
            }
-         
+
             this.RoundPrice=Options[0].Price
             this.RoundPriceUrl=Options[0].Deeplink
-            
+
             let OutSegId=''
             let InSegId=''
-                        
+            let check={}
+            let OutDepartureTime=''
+            let InDepartureTime=''
            for(let k=0; k<res.data.Legs.length; k++){
              if(res.data.Legs[k].Id==res.data.Itineraries[j].OutboundLegId){
+               check.OutDepartureTime=this.SlideCheck(res.data.Legs[k].Departure)
                this.OutDepTime=this.timeTrans(res.data.Legs[k].Departure)
                this.OutArrTime=this.timeTrans(res.data.Legs[k].Arrival)
                this.OutDuration=this.dueTrans(res.data.Legs[k].Duration)
                this.OutStops=res.data.Legs[k].Stops
                this.OutStopNum=res.data.Legs[k].Stops.length
                this.OutCarrier=res.data.Legs[k].Carriers
-               OutSegId=res.data.Legs[k].SegmentIds    
-            
-               } 
-              
+               OutSegId=res.data.Legs[k].SegmentIds
+
+               }
+
             if(inboundDate!==""&&res.data.Legs[k].Id==res.data.Itineraries[j].InboundLegId){
+              check.InDepartureTime=this.SlideCheck(res.data.Legs[k].Departure)
               this.InDepTime=this.timeTrans(res.data.Legs[k].Departure)
               this.InArrTime=this.timeTrans(res.data.Legs[k].Arrival)
               this.InDuration=this.dueTrans(res.data.Legs[k].Duration)
@@ -405,8 +443,7 @@ export default {
               this.InCarrier=res.data.Legs[k].Carriers
               InSegId=res.data.Legs[k].SegmentIds
            }
-        
-   
+
          }//for k
           for(let l=0; l<res.data.Carriers.length; l++){
             if(inboundDate && res.data.Carriers[l].Id == this.InCarrier){
@@ -418,7 +455,7 @@ export default {
               this.OutCarrierName=res.data.Carriers[l].Name
             }
           }//for l
-        
+
         let stop
         let InStopAll=[]
           for (let g=0; g<this.InStops.length; g++) {
@@ -446,9 +483,11 @@ export default {
             }
                 OutStopAll.push(stop)
           }
+          let outSeg=[]
           for(let k=0; k<OutSegId.length; k++){
           for(let x=0; x<res.data.Carriers.length; x++){
             if(res.data.Carriers[x].Id==res.data.Segments[OutSegId[k]].Carrier){
+              outSeg.push({'Name':res.data.Carriers[x].Name})
               if(optionTypeIndex===0){
                 if(this.airCheckName.indexOf(res.data.Carriers[x].Name)==-1){
                   this.airCheckName.push(res.data.Carriers[x].Name)
@@ -458,18 +497,20 @@ export default {
             }
           }
           }
+          let inSeg=[]
           for(let k=0; k<InSegId.length; k++){
         for(let y=0; y<res.data.Carriers.length; y++){
-            if(res.data.Carriers[x].Id==res.data.Segments[InSegId[k]].Carrier){
+            if(res.data.Carriers[y].Id==res.data.Segments[InSegId[k]].Carrier){
+              inSeg.push({'Name':res.data.Carriers[y].Name})
               if(optionTypeIndex===0){
-                if(this.airCheckName.indexOf(res.data.Carriers[x].Name)==-1){
-                  this.airCheckName.push(res.data.Carriers[x].Name)
-                  this.airSelName.push(res.data.Carriers[x].Name)
+                if(this.airCheckName.indexOf(res.data.Carriers[y].Name)==-1){
+                  this.airCheckName.push(res.data.Carriers[y].Name)
+                  this.airSelName.push(res.data.Carriers[y].Name)
                 }
               }
             }
           }
-          } 
+          }
            let flight
            flight={
             'OutCarrierImg':this.OutCarrierImg,//항공사 이미지
@@ -494,43 +535,51 @@ export default {
             'InStops':this.InStops,//경유지 이름(오는날)
             'InStopNum':this.InStopNum,//경유횟수(오는날)
             'InArrTime': this.InArrTime,//도착시간(오는날)
-            'Symbol':this.Symbol, 
+            'Symbol':this.Symbol,
             'RoundPrice':this.RoundPrice,//가격
-            'RoundPriceUrl':this.RoundPriceUrl,//가격 선택     
+            'RoundPriceUrl':this.RoundPriceUrl,//가격 선택
             'Options':Options,
+            'check':check,
+            'outSeg':outSeg,
+            'inSeg':inSeg,
 
-                      
            }
-  
+
           if(optionTypeIndex===0){
            this.flights.push(flight)
            this.optionSorted[0].push(flight)
            }else if(optionTypeIndex===1){
              this.optionSorted[1].push(flight)
-
            }else if(optionTypeIndex===2){
              this.optionSorted[2].push(flight)
            }else{
               this.optionSorted[3].push(flight)
            }
-           
-     
+
           }//for j
                    console.log(this.flightsNum=this.flights.length)
                    console.log(this.optionSorted)
           }
         })
         .then(()=>{
+          if(addType===2){
           this.loading=false
+          return
+          }
           if(addType<2){
             return setTimeout(()=>{this.getFligths(optionTypeIndex,addType+1)},500);
           }
         })
-
+        })
       })//2
     .catch((error)=>{
     console.log(error)
     })
+    // this.$router.replace(`/flightlist`).catch(error => {
+    //     if(error.name != "NavigationDuplicated" ){
+    //       throw error;
+    //     }
+    //   });
 
     },
     timeTrans(time) {
@@ -549,7 +598,13 @@ export default {
           return `${parseInt(parseInt(duration)/60)}시간 ${parseInt(duration)%60}분`
        },
        moreList(){
-      this.limit+=10
+         const btnMore=document.querySelector('.btnMore')         
+         this.limit+=10
+         if(this.limit>=this.flightsNum){
+           btnMore.style.display="none"
+         }
+      
+ 
        },
        OptionTypeUpdate(index){
           this.flights = []
@@ -563,15 +618,72 @@ export default {
          this.limit=10
          this.loading=true
             // this.optionSorted[this.optionTypeIndex]
+         for(let i=0; i<this.optionSorted[this.optionTypeIndex].length; i++){
+           if(this.$route.query.cometime!==''){
+          //  if((this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].InStopNum)!=-1)
+          //   ||(this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].OutStopNum)!=-1)
+          //   ||(this.selected.indexOf('2')!=-1&&Number(this.optionSorted[this.optionTypeIndex][i].InStopNum)>1)
+          //   ||(this.selected.indexOf('2')!=-1&&Number(this.optionSorted[this.optionTypeIndex][i].OutStopNum)>1)){
 
+             this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+        // if(this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime>=this.outrange[0]
+        //       &&this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime<=this.outrange[1]
+        //       &&this.optionSorted[this.optionTypeIndex][i].check.InDepartureTime>=this.inrange[0]
+        //       &&this.optionSorted[this.optionTypeIndex][i].check.InDepartureTime<=this.inrange[1]){
+
+            // for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].outSeg.length; j++){
+            // if (this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].outSeg[j].Name) !==-1){
+            //   this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+            //   break;
+            // }
+            // }
+            // for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].inSeg.length; j++){
+            //   if(this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].inSeg[j].Name)!==-1){
+            //     this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+            //     break;
+            //   }
+            //  }
+            //  }
+            // }
+           }//comtime
+           else{
+            this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+
+            // if ((this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].OutStopNum) != -1)
+            //       || (this.selected.indexOf('2') != -1 && Number(this.optionSorted[this.optionTypeIndex][i].OutStopNum) > 1)) {
+
+            //       // 출발시간
+            //       if (this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime >= this.outrange[0]
+            //           && this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime <= this.outrange[1]) {
+            //         // 항공사 체크박스
+
+            //           for (let j=0; j<this.optionSorted[this.optionTypeIndex][i].outSeg.length; j++) {
+            //             if (this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].outSeg[j].Name) != -1) {
+            //               this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+
+            //               break;
+            //             }
+            //           }
+
+            //       }
+
+            //   }
+            }
+
+           }
             setTimeout(()=>{this.changeLoading()},500);
        },
       changeLoading(){
         this.loading=false;
-      }
+      },
+          SlideCheck(time) {
+          return parseInt(time.slice(11, 13)) * 60 + parseInt(time.slice(14, 16))
+        },
   }
 };
 </script>
 <style scoped>
 @import "./FlightList.css";
 </style>
+
+

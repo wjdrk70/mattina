@@ -7,13 +7,14 @@
           <h2>
             <b>
               DONT LISTEN TO WHAT
-              THEY SAY
-            </b>
+              THEY SAY               
+            </b>           
           </h2>
-          <hr />
+        
           <h1>
             <b>GO AND SEE</b>
           </h1>
+          
         </div>
         <div class="flight-info">
           <!-- <v-btn text x-large color="primary">왕복</v-btn>
@@ -25,21 +26,28 @@
           <div class="btns">
             <!-- <v-btn active-class="btn1" text x-large color="primary" v-model="roundtrip" @click="round">왕복</v-btn>
             <v-btn active-class="btn2" text x-large color="primary" v-model="onewaytrip" @click="oneway">편도</v-btn>-->
-            <button class="btn1" v-bind="roundtrip" @click="round">왕복</button>
+            <button class="btn1" v-bind="roundtrip" @click="changeBtn(0)">왕복</button>
             
-            <button class="btn2" v-bind="onewaytrip" @click="oneway">편도</button>
+            <button class="btn2" v-bind="onewaytrip" @click="changeBtn(1)">편도</button>
           </div>
 
-          <v-container>
-            <v-row>
-              <v-col cols="10" lg="2"  md="2"  sm="10"  xs="10" >
-                <div class="departure">
+        
+      <!-- <v-container>
+          <v-row> -->
+            
+             <div class="search-info">
+            <!-- <v-col cols="10" lg="2"  md="2"  sm="10"  xs="10" > -->
+             
+                <div class="departure" style="width: 100%;">
                   <v-text-field
                     dense
                     label="출발지"
                     append-icon="flight_takeoff"
                     v-model="departureInput"
                     @keyup="Depouputbox"
+                    @keydown.up="pressUP('departure')"
+                    @keydown.down="pressDown('departure')"
+                    @keydown.enter="pressEnter('departure')"
                     @input="departureInput = $event.target.value"
                   ></v-text-field>
                   <div class="dep-tooltip">
@@ -55,17 +63,15 @@
                         v-for="(airport,id) in departureOutput.slice(0,scrollMore)"
                         :key="id"
                         class="country-name"
-                      >
+                        :class="{'is-active' : id ===depArrow}">
                         <div style="color: black; font-size:17px;">
-                          <div class="aiportList">
+                          <div class="airportList">
                             <div
                               class="airport-name"
-                              @click="selectAir(`${airport.code}`, `${airport.name_kor}`,'departure')"
-                            >
+                              @click="selectAir(`${airport.code}`, `${airport.name_kor}`,'departure')">
                               <i class="anime-i"></i>
-                              {{airport.name_kor}} {{airport.code}}
-                              <br />
-                              <span class="airport-nation">{{airport.nation_kor}}</span>
+                              {{airport.name_kor}} {{airport.code}}                              
+                              <span  class="airport-nation">{{airport.nation_kor}}</span>
                             </div>
                           </div>
                         </div>
@@ -73,16 +79,19 @@
                     </div>
                   </div>
                 </div>
-              </v-col>
-
-              <v-col cols="10" lg="2"  md="2"  sm="10"  xs="10" >
-                <div class="arrival">
+              <!-- </v-col> -->
+              <div class="empty"></div>
+              <!-- <v-col cols="12" lg="2"  md="2"  sm="12"  xs="12" > -->
+                <div class="arrival" style="width: 100%;">
                   <v-text-field
                     dense
                     label="도착지"
                     append-icon="flight_takeoff"
                     v-model="arrivalInput"
-                    @keyup="Arrouputbox"
+                    @keyup="Arroutputbox"
+                    @keydown.up="pressUP('arrival')"
+                    @keydown.down="pressDown('arrival')"
+                    @keydown.enter="pressEnter('arrival')"
                     @input="arrivalInput = $event.target.value"
                   ></v-text-field>
                   <div class="arr-tooltip">
@@ -98,16 +107,14 @@
                         v-for="(airport,id) in arrivalOutput.slice(0,scrollMore)"
                         :key="id"
                         class="country-name"
-                      >
+                        :class="{'is-active' : id===arrArrow}">
                         <div style="color: black; font-size:17px;">
-                          <div class="aiportList">
+                          <div class="airportList">
                             <div
                               class="airport-name"
-                              @click="selectAir(`${airport.code}`, `${airport.name_kor}`,'arrival')"
-                            >
+                              @click="selectAir(`${airport.code}`, `${airport.name_kor}`,'arrival')">
                               <i class="anime-arr-i"></i>
-                              {{airport.name_kor}} {{airport.code}}
-                              <br />
+                              {{airport.name_kor}} {{airport.code}}                         
                               <span class="airport-nation">{{airport.nation_kor}}</span>
                             </div>
                           </div>
@@ -116,18 +123,17 @@
                     </div>
                   </div>
                 </div>
-              </v-col>
+              <!-- </v-col> -->
+              <div class="empty"></div>
 
-              <v-col cols="10" lg="2"  md="2"  sm="10"  xs="10" >
-                <div class="departure-time">
+              <!-- <v-col cols="12" lg="2"  md="2"  sm="12"  xs="12" > -->
+                <div class="departure-time" style="width: 100%;">
                   <v-menu
                     v-model="menu"
-                    :close-on-content-click="false"
-                   
+                    :close-on-content-click="false"                   
                     transition="scale-transition"
                     offset-y
-                    min-width="290px"
-                  >
+                    min-width="290px">
                     <template #activator="{ on }">
                       <v-text-field
                         dense
@@ -138,18 +144,17 @@
                         v-on="on"
                       ></v-text-field>
                     </template>
-
                     <v-date-picker v-model="leavetime" :min="mindate" @input="menu=false"></v-date-picker>
                   </v-menu>
                 </div>
-              </v-col>
 
-              <v-col cols="10" lg="2"  md="2"  sm="10"  xs="10" >
-                <div class="arrival-time">
+              <!-- </v-col> -->
+              <div class="empty"></div>
+              <!-- <v-col cols="12" lg="2"  md="2"  sm="12"  xs="12" > -->
+                <div class="arrival-time" style="width: 100%;">
                   <v-menu
                     v-model="menu2"
-                    :close-on-content-click="false"
-             
+                    :close-on-content-click="false"             
                     transition="scale-transition"
                     offset-y
                     min-width="290px"
@@ -169,10 +174,10 @@
                     <v-date-picker v-model="cometime" :min="minComedate" @input="menu2=false"></v-date-picker>
                   </v-menu>
                 </div>
-              </v-col>
-
-              <v-col cols="10" lg="2"  md="2"  sm="10"  xs="10" >
-                <div class="Class-Selector">
+              <!-- </v-col> -->
+              <div class="empty"></div>
+              <!-- <v-col cols="12" lg="2"  md="2"  sm="12"  xs="12" > -->
+                <div class="Class-Selector" style="width: 100%;">
                   <v-menu
                     v-model="menu3"
                     :close-on-content-click="false"
@@ -192,87 +197,85 @@
                       ></v-text-field>
                     </template>
 
-                    <v-card class="mx-auto" width="290px" height="400px" @input="menu3=false">
+                    <v-card class="mx-auto" width="300px" height="415px" @input="menu3=false">
                       <v-card-text style="background:#1E88E5">
                         <div style="color:white; font-size:18px; height:15px ">좌석</div>
                         </v-card-text>                    
                       <v-select :items="classes" :value="flightClass" :item-value="flightClass" 
                               flat  v-model="flightClass" solo ></v-select>                               
-                       <v-card-text style="background:#1E88E5">
+                       <v-card-text style="background:#1E88E5; margin-top:-22px">
                          <div style="color:white;  font-size:18px; height:15px"  >승객</div>
                          </v-card-text>         
-                      <v-card-actions style="margin-bottom:-10px; margin-top:10px;" >
+                      <v-card-actions style="margin-top: 30px;" >
                         <v-card-text>
                           <p style="font-size: 18px;
                                     font-weight: bold;">성인</p>
                         </v-card-text>
-                        <v-btn active-class="minus" color="blue darken-1" dark small absolute fab right
-                               @click="minusAdults">
-                          <v-icon>mdi-minus</v-icon>
-                        </v-btn>
+                        <button class="minus" @click="minusAdults">
+                          <v-icon color="white">mdi-minus</v-icon>
+                        </button>
                         <p
                           style="font-size: 18px;
                                 font-weight: bold;
                                 margin: 0px 20px 0px 0px;"
                                 >{{adults}}</p>
-                        <v-btn active-class="plus" style="margin: 0 15px 0px 0px;" color="blue darken-1" 
-                                dark small right fab @click="plusAdults">
-                          <v-icon>mdi-plus</v-icon>
-                        </v-btn>
+                        <button class="plus" @click="plusAdults">
+                          <v-icon color="white">mdi-plus</v-icon>
+                        </button>
                       </v-card-actions>
 
-                      <v-card-actions style="margin-bottom: -17px;">
+                      <v-card-actions style="margin-top: 10px;">
                         <v-card-text>
                           <p style="font-size: 18px;
                                     font-weight: bold;">어린이</p>
                            <p style="font-size: 12px; ">만 2~11세</p>  
                         </v-card-text>                        
-                        <v-btn active-class="minus"  color="blue darken-1" dark small absolute fab right 
-                              @click="minusChildren">
-                          <v-icon>mdi-minus</v-icon>
-                        </v-btn>
+                        <button class="minus" @click="minusChildren">
+                          <v-icon color="white">mdi-minus</v-icon>
+                        </button>
                         <p
                           style="font-size: 18px;
                                 font-weight: bold;
                                 margin: 0px 20px 0px 0px;"
                                 >{{children}}</p>
-                        <v-btn active-class="plus" style="margin: 0 15px 0px 0px;" color="blue darken-1" 
-                                dark small right fab @click="plusChildren">
-                          <v-icon>mdi-plus</v-icon>
-                        </v-btn>
+                        <button class="plus" @click="plusChildren">
+                          <v-icon color="white">mdi-plus</v-icon>
+                        </button>
                       </v-card-actions>
                          
-                      <v-card-actions>
+                      <v-card-actions style="margin-top: 7px;">
                         <v-card-text>
                           <p style="font-size: 18px;
                                     font-weight: bold;">유아</p>
                            <p style="font-size: 12px; ">만 2세 미만</p>          
                         </v-card-text>
-                        <v-btn active-class="minus" color="blue darken-1" dark small absolute fab right 
-                              @click="minusInfants">
-                          <v-icon>mdi-minus</v-icon>
-                        </v-btn>
+                        <button class="minus" @click="minusInfants">
+                          <v-icon color="white">mdi-minus</v-icon>
+                        </button>
                         <p
                           style="font-size: 18px;
                                 font-weight: bold;
                                 margin: 0px 20px 0px 0px;"
                                 >{{infants}}</p>
-                        <v-btn active-class="plus" style="margin: 0 15px 0px 0px;" color="blue darken-1" 
-                              dark small right fab @click="plusInfants">
-                          <v-icon>mdi-plus</v-icon>
-                        </v-btn>
+                        <button class="plus" @click="plusInfants">
+                          <v-icon color="white">mdi-plus</v-icon>
+                        </button>
                       </v-card-actions>                        
                     </v-card>
                   </v-menu>
                 </div>
-              </v-col>
-                <div class="search-btn">
+              <!-- </v-col> -->
+              <div class="empty"></div>
+                <div class="search-btn" style="width: 100%;">
                   <button class="search-sbmit" @click="searchTikect()">
                     <v-icon large color="white">search</v-icon>
                   </button>
                 </div>
-            </v-row>
-          </v-container>
+                
+                
+             </div>
+            <!-- </v-row>
+          </v-container> -->
         </div>
         </div>
       </div>
@@ -289,8 +292,9 @@ export default {
     tomorrow.setDate(tomorrow.getDate() + 1);
     return {
       scrollMore: 10,
-      depScroll: 0,
-      arrScroll: 0,
+    
+      depArrow:-1,
+      arrArrow:-1,
       flightClass:'economy',
       classes: ["economy", "business", "first"],
       // btns:["왕복","편도"],
@@ -385,20 +389,20 @@ export default {
       });
     },
     Depouputbox() {
-      this.open = "true";
+      this.open = true;
       this.departureSearch();
     },
-    Arrouputbox() {
+    Arroutputbox() {
       this.arrivalSearch();
     },
     selectAir(airCode, airportName, travelType) {
       const airportNameSplit = airportName.replace(/\s/g, "");
-      if (travelType === "departure") {
+      if (travelType === 'departure') {
         this.departure = airCode;
-        this.departureInput = `${airportNameSplit}, ${this.departure}`;
+        this.departureInput = `${airportNameSplit} (${this.departure})`;
       } else {
         this.arrival = airCode;
-        this.arrivalInput = `${airportNameSplit}, ${this.arrival}`;
+        this.arrivalInput = `${airportNameSplit} (${this.arrival})`;
       }
     },
     departureSearch() {
@@ -443,44 +447,35 @@ export default {
         }
       });
     },
-    scrollDetection() {
-      if (this.depScroll.scrollTop > 400 * (this.scrollMore / 10)) {
-        this.scrollMore += 10;
-      }
-      if (this.arrScroll.scrollTop > 400 * (this.scrollMore / 10)) {
-        this.scrollMore += 10;
-      }
-    },
-    oneway() {
-      const btn1 = document.querySelector(".btn1");
-      const btn2 = document.querySelector(".btn2");
+    // scrollDetection() {
+    //   if (this.depScroll.scrollTop > 400 * (this.scrollMore / 10)) {
+    //     this.scrollMore += 10;
+    //   }
+    //   if (this.arrScroll.scrollTop > 400 * (this.scrollMore / 10)) {
+    //     this.scrollMore += 10;
+    //   }
+    // },
+   changeBtn(tripType){
+       const btn1 = document.querySelector(".btn1");
+        const btn2 = document.querySelector(".btn2");
+      if(tripType===1){
       this.cometime = "";
       this.roundtrip = false;
       this.onewaytrip = true;
-
-      if (this.onewaytrip === true) {
-        btn1.style.background = "#eaeaea";
-        btn1.style.color = "black";
-        btn2.style.background = "#4697ef";
-        btn2.style.color = "white";
-      }
-    },
-    round() {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      const btn1 = document.querySelector(".btn1");
-      const btn2 = document.querySelector(".btn2");
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      this.cometime = tomorrow.toISOString().substr(0, 10);
+       btn1.style.background = "#eaeaea";
+       btn1.style.color = "black";
+       btn2.style.background = "#4697ef";
+      btn2.style.color = "white";
+      }else{
+      this.cometime = this.leavetime;
       this.onewaytrip = false;
       this.roundtrip = true;
-
-      if (this.roundtrip === true) {
-        btn1.style.background = "#4697ef";
-        btn1.style.color = "white";
-        btn2.style.background = "#eaeaea";
-        btn2.style.color = "black";
+      btn1.style.background = "#4697ef";
+      btn1.style.color = "white";
+      btn2.style.background = "#eaeaea";
+      btn2.style.color = "black";
       }
+
     },
     checkcal() {
       const btn1 = document.querySelector(".btn1");
@@ -521,6 +516,42 @@ export default {
       if(this.infants >= 1){
       this.infants -= 1;
       }
+    },
+    pressDown(tripType){
+        if(tripType==='departure'){
+          if(this.depArrow<this.departureOutput.length){
+            this.depArrow += 1
+          }
+        }else{
+          if(this.arrArrow<this.arrivalOutput.length){
+            this.arrArrow += 1
+          }
+        }
+    },
+    pressUP(tripType){
+         if(tripType==='departure'){
+           if(this.depArrow > 0){
+             this.depArrow --
+           }
+         }else{
+           if(this.arrArrow > 0){
+             this.arrArrow --
+           }
+        }
+    },
+    pressEnter(tripType){
+      if(tripType==='departure'){
+        this.selectAir(this.departureOutput[this.depArrow].code,
+                      this.departureOutput[this.depArrow].name_kor,
+                      'departure')
+                  
+                     
+      }
+      else{
+        this.selectAir(this.arrivalOutput[this.arrArrow].code,
+                       this.arrivalOutput[this.arrArrow].name_kor,
+                       'arrival')
+      }
     }
   },
   watch: {
@@ -546,7 +577,7 @@ export default {
     minComedate(){
       return this.leavetime
     }
-  },
+  }
 };
 </script>
 <style scoped>

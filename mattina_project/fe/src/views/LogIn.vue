@@ -1,9 +1,7 @@
 <template>
-  <v-container fluid>
-    <v-layout>
-      <h1>로그인 페이지</h1>
-    </v-layout>
-  </v-container>
+   <div>
+      <a href="http://localhost:3000/api/login/auth/kakao"><img src="@/assets/kakao_login.png" alt=""></a>
+    </div>
 </template>
 <script>
 export default {

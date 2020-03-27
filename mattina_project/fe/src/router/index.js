@@ -1,11 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '../views/Home'
-
+import Home from '@/views/Home'
+import Guide from '@/views/Attractions'
+import Login from '@/views/LogIn'
+import FlightList from '@/views/FlightList'
+ 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
+  base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
@@ -15,18 +19,18 @@ export default new Router({
 
     {
       path: '/guide',
-      name: 'guide',
-      component: () => import('../views/Attractions.vue')
+      name: 'Guide',
+      component: Guide
     },
     {
       path: '/log-in',
-      name: 'LogIn',
-      component: () => import('../views/LogIn.vue')
+      name: 'Login',
+      component: Login
     },
     {
       path: '/flightlist',
       name: 'FlightList',
-      component: () => import('../views/FlightList'),
+      component: FlightList,
       props: true
     }
   ]
