@@ -93,16 +93,16 @@
         <div class="total_bound">
         <div class="outbound">
           <div class="flight_img">
-            <span>{{i}}<img :src="f.OutCarrierImg"></span>
+            <span><img :src="f.OutCarrierImg"></span>
             <span class="flight_name">{{f.OutCarrierName}}</span>
           </div>
-        <div class="center">
-          <div>
+
+          <div class="center">
         <span class="center_timefont">{{f.OutDepTime}}</span>
-        <span class="center_codefont">{{f.OriginAirCode}}</span>
-          </div>
+        <div class="center_codefont" @mouseover="isName(i)" @mouseleave="hideName(i)">{{f.OriginAirCode}}</div>
+        <div class="center_namefont">{{f.OriginAirName}}</div> 
         </div>
-        <div>
+     
           <div class="flights_duration">
               <div class="flights_duration_time">{{f.OutDuration}}</div>
               <div class="grid">
@@ -113,17 +113,24 @@
               </div>
               <div class="flights_transfer">
                <div v-if="f.OutStopNum===0">직항</div>
-              <div v-else>이건 아바{{f.OutStopNum}}회 경유</div>
-              <div v-for="stop in f.OutStopAll" :key="stop">{{stop.code}}</div>
+                    <span v-else-if="f.OutStopNum===1">{{f.OutStopNum}}회 경유
+                    <span>({{f.OutStopAll[0].code}})</span>
+                    </span>
+                    <span v-else-if="f.OutStopNum===2">{{f.OutStopNum}}회 경유
+                 <span>({{f.OutStopAll[0].code}},{{f.OutStopAll[1].code}})</span>
+                    </span>
+                      <span v-else-if="f.OutStopNum===3">{{f.OutStopNum}}회 경유
+                 <span>({{f.OutStopAll[0].code}},{{f.OutStopAll[1].code}},{{f.OutStopAll[2].code}})</span>
+                    </span>
               </div>
 
           </div>
-        </div>
+        
 
         <div class="center">
             <div>
-            <span class="center_timefont">{{f.OutArrTime}}</span>
-            <span class="center_codefont">{{f.DestAirCode}}</span>
+            <div class="center_timefont">{{f.OutArrTime}}</div>
+            <div class="center_codefont">{{f.DestAirCode}}</div>
             </div>
         </div>
         </div>
@@ -148,8 +155,15 @@
               </div>
               <div class="flights_transfer">
                     <div v-if="f.InStopNum===0">직항</div>
-                    <div v-else>이건 인바{{f.InStopNum}}회 경유</div>
-                    <div v-for="stop in f.InStopAll" :key="stop">{{stop.code}}</div>
+                    <span v-else-if="f.InStopNum===1">{{f.InStopNum}}회 경유
+                    <span>({{f.InStopAll[0].code}})</span>
+                    </span>
+                    <span v-else-if="f.InStopNum===2">{{f.InStopNum}}회 경유
+                 <span>({{f.InStopAll[0].code}},{{f.InStopAll[1].code}})</span>
+                    </span>
+                      <span v-else-if="f.InStopNum===3">{{f.InStopNum}}회 경유
+                 <span>({{f.InStopAll[0].code}},{{f.InStopAll[1].code}},{{f.InStopAll[2].code}})</span>
+                    </span>
                 </div>
           </div>
           <div class="center">
@@ -162,7 +176,7 @@
       </div>
       <div></div>
       <div class="selectprice">
-        <div class="round" :style="`${InDepTime? 'margin: 45% 25% 45% 26%;':'margin:19%;'}`">
+        <div class="round" :style="`${InDepTime? 'margin: 50% 25%;':'margin:19%;'}`">
               <div class="price">
               <span class="price_box" >{{f.Symbol}}{{f.RoundPrice}}</span>
               <span class=price_button><v-btn :href="f.RoundPriceUrl">선택</v-btn></span>
@@ -235,6 +249,7 @@ export default {
       sortDuration:false,
       sortOutbound:false,
       sortInbound:false,
+      
 
     sortSelects:[
     {type:'최저가 순',bool:true},
@@ -300,6 +315,16 @@ export default {
         }
       }
     },
+   isName(i){
+    const name=document.querySelectorAll('.center_namefont');
+    name[i].style.display='block';
+    
+   },
+   hideName(i){
+   const name=document.querySelectorAll('.center_namefont');
+    name[i].style.display='none';
+ 
+   },
       selectAll(){
       this.airCheckName = this.airSelName;
     },
@@ -559,6 +584,7 @@ export default {
           }//for j
                    console.log(this.flightsNum=this.flights.length)
                    console.log(this.optionSorted)
+                  
           }
         })
         .then(()=>{
@@ -619,55 +645,14 @@ export default {
          this.loading=true
             // this.optionSorted[this.optionTypeIndex]
          for(let i=0; i<this.optionSorted[this.optionTypeIndex].length; i++){
+           console.log(this.optionSorted[this.optionTypeIndex].length)
            if(this.$route.query.cometime!==''){
-          //  if((this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].InStopNum)!=-1)
-          //   ||(this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].OutStopNum)!=-1)
-          //   ||(this.selected.indexOf('2')!=-1&&Number(this.optionSorted[this.optionTypeIndex][i].InStopNum)>1)
-          //   ||(this.selected.indexOf('2')!=-1&&Number(this.optionSorted[this.optionTypeIndex][i].OutStopNum)>1)){
-
+          
              this.flights.push(this.optionSorted[this.optionTypeIndex][i])
-        // if(this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime>=this.outrange[0]
-        //       &&this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime<=this.outrange[1]
-        //       &&this.optionSorted[this.optionTypeIndex][i].check.InDepartureTime>=this.inrange[0]
-        //       &&this.optionSorted[this.optionTypeIndex][i].check.InDepartureTime<=this.inrange[1]){
-
-            // for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].outSeg.length; j++){
-            // if (this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].outSeg[j].Name) !==-1){
-            //   this.flights.push(this.optionSorted[this.optionTypeIndex][i])
-            //   break;
-            // }
-            // }
-            // for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].inSeg.length; j++){
-            //   if(this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].inSeg[j].Name)!==-1){
-            //     this.flights.push(this.optionSorted[this.optionTypeIndex][i])
-            //     break;
-            //   }
-            //  }
-            //  }
-            // }
+      
            }//comtime
            else{
             this.flights.push(this.optionSorted[this.optionTypeIndex][i])
-
-            // if ((this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].OutStopNum) != -1)
-            //       || (this.selected.indexOf('2') != -1 && Number(this.optionSorted[this.optionTypeIndex][i].OutStopNum) > 1)) {
-
-            //       // 출발시간
-            //       if (this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime >= this.outrange[0]
-            //           && this.optionSorted[this.optionTypeIndex][i].check.OutDepartureTime <= this.outrange[1]) {
-            //         // 항공사 체크박스
-
-            //           for (let j=0; j<this.optionSorted[this.optionTypeIndex][i].outSeg.length; j++) {
-            //             if (this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].outSeg[j].Name) != -1) {
-            //               this.flights.push(this.optionSorted[this.optionTypeIndex][i])
-
-            //               break;
-            //             }
-            //           }
-
-            //       }
-
-            //   }
             }
 
            }

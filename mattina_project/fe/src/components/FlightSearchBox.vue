@@ -16,7 +16,8 @@
                    @keydown.up="pressUP('departure')"
                    @keydown.down="pressDown('departure')"
                    @keydown.enter="pressEnter('departure')"
-                   @input="departureInput = $event.target.value">   
+                   @input="departureInput = $event.target.value">
+            <i class="fas fa-plane-departure fa-lg fonticon"></i>   
             <div class="dep-tooltip2">             
               <i></i>
             </div>                    
@@ -57,7 +58,8 @@
                     @keydown.down="pressDown('arrival')"
                     @keydown.enter="pressEnter('arrival')"
                     @input="arrivalInput = $event.target.value">
-        <div class="arr-tooltip2">            
+         <i class="fas fa-plane-arrival fa-lg fonticon"></i>            
+         <div class="arr-tooltip2">            
             <i></i>
           </div>
           <div class="searchList-arr2">
@@ -95,6 +97,7 @@
                    v-model="leavetime"                          
                    readonly
                    v-on="on">
+            <i class="far fa-calendar-check fa-lg fonticon"></i>       
           </template>
           <v-date-picker v-model="leavetime" :min="mindate" @input="menu=false"></v-date-picker>
         </v-menu>
@@ -112,6 +115,7 @@
                    readonly 
                    @click="changeRadio"                   
                    v-on="on">
+            <i class="far fa-calendar-check fa-lg fonticon"></i>        
           </template>
           <v-date-picker v-model="cometime" :min="minComedate" @input="menu2=false"></v-date-picker>
         </v-menu>             
@@ -132,6 +136,7 @@
                       v-on="on"
                       readonly
                       :value="`${adults + infants + children} ,${flightClass}`">
+                <i class="fas fa-user-friends fa-lg fonticon"></i>      
               </template>
 
             <v-card class="mx-auto"  width="300px" height="415px" @input="menu3=false">
@@ -336,7 +341,7 @@ export default {
       this.departureSearch2();
     },
      Arroutputbox2() {
-      this.arrivalSearch2();
+      this.arrivalSearch2();s
     },
     selectAir(airCode, airportName, travelType) {
       const airportNameSplit = airportName.replace(/\s/g, "");

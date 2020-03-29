@@ -43,6 +43,19 @@
   color: black;
   border-radius: 5px;
 }
+.list_content input{
+  padding-left: 45px;
+}
+.list_content{
+  position: relative;
+}
+.fonticon{
+  position: absolute;
+  top: 14px;
+  left: 10px;
+  color: #969494;
+  
+}
 .list_search{
   width: 100px;
   height: 40px;
