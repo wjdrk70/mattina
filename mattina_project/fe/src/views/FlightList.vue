@@ -34,9 +34,9 @@
           <!-- <v-checkbox v-model="selected" color="info" label="직항" value="0" @change="updateResult"></v-checkbox>
           <v-checkbox v-model="selected" color="info" label="1회경유" value="1" @change="updateResult"></v-checkbox>
           <v-checkbox v-model="selected" color="info" label="2회경유" value="2" @change="updateResult"></v-checkbox> -->
-        <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="0" checked @change="updateResult">직항</label></div>
-         <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="1" checked @change="updateResult">1회경유</label></div>
-         <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" value="2" checked @change="updateResult">2회경유</label></div>
+        <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" :value=0 checked @change="updateResult()">직항</label></div>
+         <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" :value=1 checked @change="updateResult()">1회경유</label></div>
+         <div><label style="font-size:16px; color:black;"><input type="checkbox" v-model="selected" :value=2 checked @change="updateResult()">2회경유</label></div>
         </div>
       </div>
 
@@ -45,49 +45,47 @@
         <div class="sidebar_slide">
           <div class="sidebar_slide_content">   
             <span>가는날 출발시간</span>
-            <span class="sidebar_slide_departure">{{outboundDepStartTime}} - {{outboundDepEndTime}}</span>
+            <span class="sidebar_slide_departure">{{this.DepTimeTrans(outrange[0])}} - {{this.DepTimeTrans(outrange[1])}}</span>
           </div>
-            <vs-slider v-model="outrange" :min="min" :max="max" @change="onChange($event)"></vs-slider>
+            <!-- <vs-slider icon="update"  v-model="outrange" :min="min" :max="max" @change="onChange" ></vs-slider> -->
+              <v-range-slider :min="min" :max="max" step="30"  v-model="outrange"  @change="updateResult"></v-range-slider>
           <div v-if="this.$route.query.cometime !=''">
             <div class="sidebar_slide_content">
               <span>오는날 출발시간</span>
-              <span class="sidebar_slide_arrival">{{inboundDepStartTime}} - {{inboundDepEndTime}}</span>
+              <span class="sidebar_slide_arrival">{{this.DepTimeTrans(inrange[0])}} - {{this.DepTimeTrans(inrange[1])}}</span>
             </div>
-              <vs-slider v-model="inrange" :min="min" :max="max" @change="onChange($event)"></vs-slider>
+              <!-- <vs-slider icon="update" v-model="inrange" :min="min" :max="max" @change="onChange" ></vs-slider> -->
+              <v-range-slider :min="min" :max="max" step="30"  v-model="inrange" @change="updateResult"></v-range-slider>
           </div>
         </div>
       </div>
       <div class="sidebar_bottom">
         <div class="airport_title">항공사 선택</div>
         <div class="airport_title_box">
-        <div v-for="i in airSelName.length" :key="i">
-          <label style="font-size:16px; color:black;"><input type="checkbox" v-model="airCheckName" :value="airSelName[i-1]" @change="updateResult">{{airSelName[i-1]}}</label>
-          <!-- <v-checkbox v-model="airCheckName" :label="airSelName[i]" :value="airSelName[i]"></v-checkbox> -->
+        <div v-for="(sel,num) in airSelName" :key="num">
+          <label style="font-size:16px; color:black;" ><input type="checkbox" v-model="airCheckName" :value="sel" @change="updateResult()">{{sel}}</label>
         </div>
         </div>
           <div class="airport_title_button">
           <button @click="selectAll" >모두 선택</button>
-          <button @click="reset" >모두 해제</button>
+          <button @click="reset">모두 해제</button>
           </div>
       </div>
       </div>
       <div class="center_empty"></div>
     <!--항공권 리스트 티켓-->
-   <div class="flightlist">
-   
-        <div class="container_flight" style="width: 100%;  padding: 0px;">
-      
-            <div class="count_box">
-           <div class="total">총 {{flightsNum}} 개의 검색 결과</div>
-              <div class="sort">
-               <button v-bind="sortPrice" @click="OptionTypeUpdate(0)">최저가 순</button>
-                <button v-bind="sortDuration" @click="OptionTypeUpdate(1)">최단시간 순</button>
-                <button v-bind="sortOutbound" @click="OptionTypeUpdate(2)">빠른출국 순</button>
-                <button v-bind="sortInbound" @click="OptionTypeUpdate(3)" v-if="InDepTime">빠른귀국 순</button>
-              </div>
-            </div>
-      
-          
+   <div class="flightlist">   
+     <div class="container_flight" style="width: 100%;  padding: 0px;">    
+      <div class="count_box">
+      <div class="total">총 {{flightsNum}} 개의 검색 결과</div>
+        <div class="sort">
+          <button v-bind="sortPrice" @click="OptionTypeUpdate(0)">최저가 순</button>
+          <button v-bind="sortDuration" @click="OptionTypeUpdate(1)">최단시간 순</button>
+          <button v-bind="sortOutbound" @click="OptionTypeUpdate(2)">빠른출국 순</button>
+          <button v-bind="sortInbound" @click="OptionTypeUpdate(3)" v-if="InDepTime">빠른귀국 순</button>
+        </div>
+      </div>     
+        
       <div class="flight_ticket" v-for="(f,i) in flights"  :key="i">
         <div class="show_ticket" v-if="i<limit">
         <div class="total_bound">
@@ -96,13 +94,19 @@
             <span><img :src="f.OutCarrierImg"></span>
             <span class="flight_name">{{f.OutCarrierName}}</span>
           </div>
-
-          <div class="center">
-        <span class="center_timefont">{{f.OutDepTime}}</span>
-        <div class="center_codefont" @mouseover="isName(i)" @mouseleave="hideName(i)">{{f.OriginAirCode}}</div>
-        <div class="center_namefont">{{f.OriginAirName}}</div> 
-        </div>
-     
+            
+          <div class="text-center d-flex align-center">
+            <v-tooltip bottom nudge-top="85px">
+              <template #activator="{ on }" >
+                <div class="flights_transfer" v-on="on" >
+                  <h3>{{f.OutDepTime}}</h3>
+                  <span>{{f.OriginAirCode}}</span>
+                </div>
+            </template>
+                  <div>{{f.OriginAirName}}</div>
+            </v-tooltip>
+          </div>
+        
           <div class="flights_duration">
               <div class="flights_duration_time">{{f.OutDuration}}</div>
               <div class="grid">
@@ -111,39 +115,46 @@
                      <i class="fa fa-plane fa-sm"></i>
                    </div>
               </div>
-              <div class="flights_transfer">
-               <div v-if="f.OutStopNum===0">직항</div>
-                    <span v-else-if="f.OutStopNum===1">{{f.OutStopNum}}회 경유
-                    <span>({{f.OutStopAll[0].code}})</span>
-                    </span>
-                    <span v-else-if="f.OutStopNum===2">{{f.OutStopNum}}회 경유
-                 <span>({{f.OutStopAll[0].code}},{{f.OutStopAll[1].code}})</span>
-                    </span>
-                      <span v-else-if="f.OutStopNum===3">{{f.OutStopNum}}회 경유
-                 <span>({{f.OutStopAll[0].code}},{{f.OutStopAll[1].code}},{{f.OutStopAll[2].code}})</span>
-                    </span>
+              <div class="text-center d-flex align-center">
+                <v-tooltip bottom nudge-top="85px">
+                  <template #activator="{ on }" >
+                    <div class="flights_transfer" v-on="on" >
+                      <span v-if="f.OutStopNum===0">직항</span>
+                      <span v-else>{{f.OutStopNum}}회 경유</span>                     
+                      <span class="stopCode" v-for="(stop,index) in f.OutStopAll" :key="index">({{stop.code}})</span>                       
+                    </div>
+                </template>
+                     <div class="stopName" v-for="(stop,index) in f.OutStopAll" :key="index" >{{stop.name}}</div>
+                </v-tooltip>
               </div>
-
           </div>
-        
-
-        <div class="center">
-            <div>
-            <div class="center_timefont">{{f.OutArrTime}}</div>
-            <div class="center_codefont">{{f.DestAirCode}}</div>
-            </div>
-        </div>
+          <div class="text-center d-flex align-center">
+          <v-tooltip bottom nudge-top="85px">
+            <template #activator="{ on }" >
+              <div class="flights_transfer" v-on="on" >
+                <h3>{{f.OutArrTime}}</h3>
+                <span>{{f.DestAirCode}}</span>
+              </div>
+          </template>
+                <div>{{f.DestAirName}}</div>
+          </v-tooltip>
+          </div>
         </div>
         <div class="inbound" v-if="InDepTime">
           <div class="flight_img">
             <span><img :src="f.InCarrierImg"></span>
             <span class="flight_name">{{f.InCarrierName}}</span>
           </div>
-          <div class="center">
-            <div>
-            <span class="center_timefont">{{f.InDepTime}}</span>
-            <span class="center_codefont">{{f.DestAirCode}}</span>
-            </div>
+           <div class="text-center d-flex align-center">
+          <v-tooltip bottom nudge-top="85px">
+            <template #activator="{ on }" >
+              <div class="flights_transfer" v-on="on" >
+                <h3>{{f.InDepTime}}</h3>
+                <span>{{f.DestAirCode}}</span>
+              </div>
+          </template>
+                <div>{{f.DestAirName}}</div>
+          </v-tooltip>
           </div>
           <div class="flights_duration">
               <div class="flights_duration_time">{{f.InDuration}}</div>
@@ -153,39 +164,45 @@
                      <i class="fa fa-plane fa-sm"></i>
                    </div>
               </div>
-              <div class="flights_transfer">
-                    <div v-if="f.InStopNum===0">직항</div>
-                    <span v-else-if="f.InStopNum===1">{{f.InStopNum}}회 경유
-                    <span>({{f.InStopAll[0].code}})</span>
-                    </span>
-                    <span v-else-if="f.InStopNum===2">{{f.InStopNum}}회 경유
-                 <span>({{f.InStopAll[0].code}},{{f.InStopAll[1].code}})</span>
-                    </span>
-                      <span v-else-if="f.InStopNum===3">{{f.InStopNum}}회 경유
-                 <span>({{f.InStopAll[0].code}},{{f.InStopAll[1].code}},{{f.InStopAll[2].code}})</span>
-                    </span>
-                </div>
+               <div class="text-center d-flex align-center">
+                <v-tooltip bottom nudge-top="85px">
+                  <template #activator="{ on }" >
+                    <div class="flights_transfer" v-on="on" >
+                      <span v-if="f.InStopNum===0">직항</span>
+                      <span v-else>{{f.InStopNum}}회 경유</span>
+                      <span v-for="(stop,index) in f.InStopAll" :key="index">({{stop.code}})</span>   
+                    </div>
+                </template>
+                     <div v-for="(stop,index) in f.InStopAll" :key="index" >{{stop.name}}</div>
+                </v-tooltip>
+              </div>
           </div>
-          <div class="center">
-            <div>
-           <span class="center_timefont">{{f.InArrTime}}</span>
-           <span class="center_codefont">{{f.OriginAirCode}}</span>
-            </div>
-           </div>
+         <div class="text-center d-flex align-center">
+          <v-tooltip bottom nudge-top="85px">
+            <template #activator="{ on }" >
+              <div class="flights_transfer" v-on="on" >
+                <h3>{{f.InArrTime}}</h3>
+                <span>{{f.OriginAirCode}}</span>
+              </div>
+          </template>
+                <div>{{f.OriginAirName}}</div>
+          </v-tooltip>
+          </div>
+
         </div>
       </div>
       <div></div>
       <div class="selectprice">
-        <div class="round" :style="`${InDepTime? 'margin: 50% 25%;':'margin:19%;'}`">
+        <div class="round" >
               <div class="price">
               <span class="price_box" >{{f.Symbol}}{{f.RoundPrice}}</span>
-              <span class=price_button><v-btn :href="f.RoundPriceUrl">선택</v-btn></span>
+              <span class=price_button><button :href="f.RoundPriceUrl">선택</button></span>
               </div>
            </div>
-        </div>       
+        </div>          
     </div>    
     </div>
-    <div class="btnMore">
+    <div class="btnMore" v-if="flightsNum>=10">
        <button @click="moreList">더 많은 결과 표시</button>
     </div>
   </div>  
@@ -210,14 +227,10 @@ export default {
       ],
       flightsNum:0,
     limit:10,
-    outboundDepStartTime:"00:00" ,
-    outboundDepEndTime: "24:00",
-    inboundDepStartTime:"00:00" ,
-    inboundDepEndTime:  "24:00" ,
     pageIndex:0,
     pageSize:10,
     optionTypeIndex:0,
-      selected: ["0","1","2"],
+      selected: [0,1,2],
       min: 0,
       max: 1440,
       outrange: [0, 1440],
@@ -245,10 +258,12 @@ export default {
       Symbol:'',
       airCheckName:[],
       airSelName:[],
+      check:{},
       sortPrice:true,
       sortDuration:false,
       sortOutbound:false,
       sortInbound:false,
+      
       
 
     sortSelects:[
@@ -288,13 +303,6 @@ export default {
   },
 
   methods: {
-    onChange(value) {
-      this.outboundDepStartTime = this.timeTransSlider(this.outrange[0]);
-      this.outboundDepEndTime = this.timeTransSlider(this.outrange[1]);
-      this.inboundDepStartTime = this.timeTransSlider(this.inrange[0]);
-      this.inboundDepEndTime = this.timeTransSlider(this.inrange[1]);
-      this.updateResult()
-    },
     timeTransSlider(time) {
       let hour, minute, result;
       hour = parseInt(parseInt(time) / 60);
@@ -315,21 +323,14 @@ export default {
         }
       }
     },
-   isName(i){
-    const name=document.querySelectorAll('.center_namefont');
-    name[i].style.display='block';
-    
-   },
-   hideName(i){
-   const name=document.querySelectorAll('.center_namefont');
-    name[i].style.display='none';
- 
-   },
-      selectAll(){
-      this.airCheckName = this.airSelName;
+    selectAll(){
+    this.airCheckName = this.airSelName;
+    this.updateResult();
     },
     reset(){
         this.airCheckName = [];
+    this.updateResult();
+
     },
 
     getFligths(optionTypeIndex,addType=0){
@@ -443,11 +444,11 @@ export default {
             let OutSegId=''
             let InSegId=''
             let check={}
-            let OutDepartureTime=''
-            let InDepartureTime=''
+            let slideOutDep=''
+            let slideInDep=''
            for(let k=0; k<res.data.Legs.length; k++){
              if(res.data.Legs[k].Id==res.data.Itineraries[j].OutboundLegId){
-               check.OutDepartureTime=this.SlideCheck(res.data.Legs[k].Departure)
+               check.slideOutDep=this.SlideCheck(res.data.Legs[k].Departure,k)
                this.OutDepTime=this.timeTrans(res.data.Legs[k].Departure)
                this.OutArrTime=this.timeTrans(res.data.Legs[k].Arrival)
                this.OutDuration=this.dueTrans(res.data.Legs[k].Duration)
@@ -459,7 +460,7 @@ export default {
                }
 
             if(inboundDate!==""&&res.data.Legs[k].Id==res.data.Itineraries[j].InboundLegId){
-              check.InDepartureTime=this.SlideCheck(res.data.Legs[k].Departure)
+              check.slideInDep=this.SlideCheck(res.data.Legs[k].Departure)
               this.InDepTime=this.timeTrans(res.data.Legs[k].Departure)
               this.InArrTime=this.timeTrans(res.data.Legs[k].Arrival)
               this.InDuration=this.dueTrans(res.data.Legs[k].Duration)
@@ -589,8 +590,8 @@ export default {
         })
         .then(()=>{
           if(addType===2){
-          this.loading=false
-          return
+              this.loading=false
+              return
           }
           if(addType<2){
             return setTimeout(()=>{this.getFligths(optionTypeIndex,addType+1)},500);
@@ -623,6 +624,12 @@ export default {
           }
           return `${parseInt(parseInt(duration)/60)}시간 ${parseInt(duration)%60}분`
        },
+      DepTimeTrans(time){
+      if(parseInt(time)%60===0){
+            return `${parseInt(parseInt(time)/60)}:00`
+          }
+          return `${parseInt(parseInt(time)/60)}: ${parseInt(time)%60}`
+       },
        moreList(){
          const btnMore=document.querySelector('.btnMore')         
          this.limit+=10
@@ -645,26 +652,69 @@ export default {
          this.loading=true
             // this.optionSorted[this.optionTypeIndex]
          for(let i=0; i<this.optionSorted[this.optionTypeIndex].length; i++){
-           console.log(this.optionSorted[this.optionTypeIndex].length)
-           if(this.$route.query.cometime!==''){
           
-             this.flights.push(this.optionSorted[this.optionTypeIndex][i])
-      
+           if(this.$route.query.cometime!==''){
+              if((this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].InStopNum)!==-1)
+                 ||(this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].OutStopNum)!==-1)
+                 ||(this.selected.indexOf(2)!==-1 && Number(this.optionSorted[this.optionTypeIndex][i].InStopNum)>1)
+                 ||(this.selected.indexOf(2)!==-1 && Number(this.optionSorted[this.optionTypeIndex][i].OutStopNum)>1)){
+                   console.log("test")
+    
+                   console.log(i+"instop: "+this.optionSorted[this.optionTypeIndex][i].InStopNum)
+                   if(this.optionSorted[this.optionTypeIndex][i].check.slideOutDep>=this.outrange[0]
+                      &&this.optionSorted[this.optionTypeIndex][i].check.slideOutDep<=this.outrange[1]
+                      &&this.optionSorted[this.optionTypeIndex][i].check.slideInDep>=this.inrange[0]
+                      &&this.optionSorted[this.optionTypeIndex][i].check.slideInDep<=this.inrange[1]){
+                      console.log("test3")
+                
+                      for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].outSeg.length; j++){
+                        if(this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].outSeg[j].Name)!==-1){
+                            this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+                            break;
+                        }
+                      }
+                      for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].inSeg.length; j++){
+                      if(this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].inSeg[j].Name)!==-1){
+                           break;
+                        }
+         
+                      }
+
+                     }//출발 도착 시간 if
+                 }//경유체크 if
            }//comtime
            else{
-            this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+               if((this.selected.indexOf(this.optionSorted[this.optionTypeIndex][i].OutStopNum)!==-1)
+                 ||(this.selected.indexOf(2)!==-1 && Number(this.optionSorted[this.optionTypeIndex][i].OutStopNum)>1)){
+                   console.log("test2")
+
+               
+                   if(this.optionSorted[this.optionTypeIndex][i].check.slideOutDep>=this.outrange[0]
+                      &&this.optionSorted[this.optionTypeIndex][i].check.slideOutDep<=this.outrange[1]){
+                            for(let j=0; j<this.optionSorted[this.optionTypeIndex][i].outSeg.length; j++){
+                        if(this.airCheckName.indexOf(this.optionSorted[this.optionTypeIndex][i].outSeg[j].Name)!==-1){
+                            this.flights.push(this.optionSorted[this.optionTypeIndex][i])
+                            break;
+                        }
+                      }
+                }
+              }
             }
 
            }
+           this.flightsNum=this.flights.length
             setTimeout(()=>{this.changeLoading()},500);
        },
       changeLoading(){
         this.loading=false;
       },
-          SlideCheck(time) {
+          SlideCheck(time,k) {
+            console.log(k,parseInt(time.slice(11, 13)) * 60 + parseInt(time.slice(14, 16)))
           return parseInt(time.slice(11, 13)) * 60 + parseInt(time.slice(14, 16))
+        
         },
-  }
+  },
+
 };
 </script>
 <style scoped>

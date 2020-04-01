@@ -1,13 +1,14 @@
 <template>
-    <div class="FlightSearchBox">
-       <div class="list_header">
+    <div class="FlightSearchBox">      
+        <div class="list_header">
       <div class="list_total_header">
+        <div class="list_con">
       <v-radio-group v-model="radios" row>
         <v-radio label="왕복" color="white" value="round"  @change="changeInput(0)"></v-radio>
         <v-radio label="편도" color="white" value="oneway" @change="changeInput(1)"></v-radio>
         </v-radio-group>      
       <div class="list_header_info">
-        <div class="list_content"> 
+        <div class="list_content1"> 
             <input class="content1" 
                     type="text"
                     placeholder="출발지" 
@@ -46,8 +47,8 @@
               </div> 
             <!-- {{this.$route.query.departureInput}}        -->
         </div>
-
-         <div class="list_content">           
+        <div></div>
+         <div class="list_content2">           
              <input value="name"
                     class="content1" 
                     type="text" 
@@ -86,8 +87,9 @@
             </div>
           </div>         
         </div>
-
-        <div class="list_content">
+        <div></div>
+        
+        <div class="list_content3">
         <v-menu>
           <template v-slot:activator="{ on }">
             <input type="text" 
@@ -103,8 +105,8 @@
         </v-menu>
             <!-- {{this.$route.query.leavetime}} -->
         </div>
-      
-        <div class="list_content">
+        <div></div>
+        <div class="list_content4">
            <v-menu>
           <template v-slot:activator="{ on }">
             <input type="text" 
@@ -122,8 +124,8 @@
               <!-- {{this.$route.query.cometime}} -->
         </div>
        
-
-        <div class="list_content">           
+        <div></div>
+        <div class="list_content5">           
           <v-menu v-model="menu3"
                   :close-on-content-click="false"                    
                   transition="scale-transition"
@@ -208,15 +210,14 @@
                 <!-- 성인 : {{this.$route.query.adults}} 어린이: {{this.$route.query.children}}
                 유아 : {{this.$route.query.infants}} | {{this.$route.query.flightClass}} -->
         </div>
-
-        <div>        
-           <div class="search-btn" style="width: 100%;">
-              <button class="list_search" @click="searchTikect()">검색</button>
-           </div>
+        <div></div>    
+        
+        <div class="search_button">
+          <button class="list_search" @click="searchTikect()">검색</button>
         </div>
 
-        <div></div>
       </div>
+    </div>
     </div>
     </div>
     </div>

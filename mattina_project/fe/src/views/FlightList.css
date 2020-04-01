@@ -33,6 +33,7 @@
 } */
 .ticket_wrap{
   width: 100%;
+  padding: 0 20px;
 }
 
 .ticket_info{
@@ -190,6 +191,7 @@ font-size: 25px;
 .total{
   height: 100%;
   margin: 15px 20px;
+  font-weight: bold;
   }
 .sort{
   display: flex;
@@ -226,6 +228,7 @@ font-size: 25px;
 .flight_img{
   text-align: center;
   margin: 15% 0;
+  padding: 0 10px;
   
 }
 .flight_img span{
@@ -240,43 +243,19 @@ font-size: 25px;
   width: 90px;
   height: 40px;
 }
-.center{
-  text-align: center;
-  margin: 32% 0;      
-}
 
-.center_timefont{
-  font-size:16px; 
-  font-weight:bold;
-}
-.center_codefont{
-  font-size: 13px;
-  position: relative;
-}
-.center_namefont{
-  padding: 5px 0px 5px 0px;
-  margin-left: 30px;
-  border-radius: 5px;
-  background-color: #f5f5f5;
-  border: 1px solid #d2c7c7;
-  box-shadow: 1px 2px 5px 1px #ccc9c9;
-  display: none;
-  position: absolute;
-  /* visibility: hidden;*/
-
-}
 .flights_duration{
   text-align: center;
-  margin: 25% 0;
+  margin: 23% 0;
 }
 .flights_duration_time{
   display:block; 
   font-size: 13px; 
-  margin: 0 0 5px 0px;
+  margin-bottom: 5px;
 }
 .grid{
   display: grid;
-  grid-template-columns: 90% 10%;
+  grid-template-columns: 85% 15%;
   margin: -10px 0 -10px 0px;
 }
 .grid hr{
@@ -289,7 +268,7 @@ font-size: 25px;
 .flights_transfer{
   display:block; 
   font-size: 13px; 
-  margin: 5px 0 0 0
+  margin: 0 auto;
 }
 .inbound{
   display: grid;
@@ -300,18 +279,32 @@ font-size: 25px;
   border-radius: 5px;
   border: 1px solid #d2c7c7;
   box-shadow: 1px 2px 5px 1px #ccc9c9;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 .round{
   border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
 }
 .round a{
-   
     color: white;
 } 
 .price_button{
     display: block;
     text-align: center;
     border-radius: 5px;
+}
+.price_button button{
+  background-color: #1976d2;   
+  color: white;
+  border-radius: 5px;
+  height: 40px;
+  width: 70px;
 }
 .price_box{
   display:block; 
@@ -346,10 +339,107 @@ font-size: 25px;
   margin:0 1rem;
 }
 
+@media screen and (max-width: 900px){
+  .sidebar{
+    display: none;
+  }
+  .center_empty{
+    display: none;
+  }
+  .flightlist {
+    width: 100%;
+  }
+  .count_box{
+    max-width: 900px;
+  }
+  .api {
+    padding: 0 20px;
+  }
+ 
+}
 
 
+@media screen and (max-width: 768px){
+  .ticket_info h3{
+    font-size: 23px;
+  }
+  .ticket_info img{
+    height: 25px;
+    width: 25px;
+  }
+  .ticket_contents1, .ticket_contents2{
+    font-size: 18px;
+  }
+  .price_box{
+    font-size: 18px;
+  }
+  .price_button button{   
+    height: 34px;
+    width: 60px;
+    font-size: 14px;
+  }
+  .flights_transfer{
+    font-size: 12px;
+  }
+  .flights_duration_time{
+    font-size: 12px;
+  }
+ 
 
+}
 
+@media screen and (max-width: 680px){
+  .sort{
+    width: 70%;
+    display: grid;
+    grid-template-columns: repeat(2,50%);
+    row-gap: 10px;
+    margin: 2px 20px;
+  }
+  .price_box{
+    font-size: 16px;
+  }
+  .price_button button{   
+    height: 30px;
+    width: 56px;
+  }
+  .flight_name{
+    font-size: 10px;
+  }
+  .flight_img img{
+    width: 75px;
+  }
+  .flights_transfer{
+    font-size: 11px;
+  }
+  .flights_duration_time{
+    font-size: 11px;
+  }
+  .grid hr{
+    border-bottom: 1px solid #48454e;
+  }
+  .svg-inline--fa.fa-w-18{
+    width: 10px;
+  }
+
+  
+}
+
+@media screen and (max-width: 375px){
+  .ticket_wrap{
+    display:none;
+  }
+  .show_ticket{
+  display: block;
+  } 
+  .round{
+  position: initial;
+  top: 0;
+  left: 0;
+  transform: none;
+  -webkit-transform: none;
+  }
+}
 
 
 

@@ -3,50 +3,67 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  height: 150px;
   margin: 0 autu;
   background:#f8c500;
   align-items: center;
   box-shadow: 1px 2px 5px 1px #cead07;
+  padding: 30px 0;
+}
+.v-input--selection-controls{
+  margin-top: 0;
+  padding-top: 0; 
 }
 .list_total_header{
   width: 100%;
-  max-width: 1180px;
+  max-width: 1240px;
   margin: 0 auto;
   
 }
 .list_header_info{
   display: grid; 
-  grid-template-columns: 20.9% 20.9% 14.9% 14.9% 19.9% 8.5%;
+  grid-template-columns: 19.9% 1% 19.9% 1% 13.9% 1% 13.9% 1% 18.9% 1% 8.5%;
 }
-
+.list_con{
+  margin: 0 30px;
+}
 
 .content1{
-  width: 230px;
+  width: 100%;
 }
 .content2{
-  width: 160px;
+  width: 100%;
 }
 .content3{
-  width: 220px;
+  width: 100%;
 }
 
-.list_content label{
+.list_content1 label,
+.list_content2 label,
+.list_content3 label,
+.list_content4 label,
+.list_content5 label{
   color: white;
   /* display: none; */
 }
-.list_content input{  
+.list_content1 input,
+.list_content2 input,
+.list_content3 input,
+.list_content4 input,
+.list_content5 input{  
   border-style: inset;   
   background-color: white;
   margin-top: 5px;
   height: 40px;
   color: black;
   border-radius: 5px;
-}
-.list_content input{
   padding-left: 45px;
 }
-.list_content{
+
+.list_content1, 
+.list_content2, 
+.list_content3, 
+.list_content4,
+.list_content5{
   position: relative;
 }
 .fonticon{
@@ -128,4 +145,65 @@ input[type="radio"] + label {
   width: 70px;
   height: 35px;
   background-color: #1E88E5;
+}
+
+@media screen and (max-width: 1024px){
+  .list_total_header{
+    max-width: 1024px;
+    margin: 0px 35px;
+  }
+  .list_header_info{
+    grid-template-columns: 49% 2% 49% 0;
+  }
+  .list_search{
+    width: 100%;
+  }
+  .list_con{
+    margin: 0;
+  }
+  .list_content1 input,
+  .list_content2 input,
+  .list_content3 input,
+  .list_content4 input,
+  .list_content5 input{
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+}
+
+@media screen and (max-width: 768px){ 
+  .list_header_info{
+    display: grid;
+    grid-template-areas: 
+    "header header header"
+    "nav nav nav"
+    "seper1 0 seper2"
+    "seper3 seper3 seper3"
+    "footer footer footer"
+    
+  }
+  .list_search{
+    width: 100%;
+  }
+  .list_content1{
+    grid-area: header;
+  }
+  .list_content2{
+    grid-area: nav;
+  }
+  .list_content3{
+    grid-area: seper1;
+  }
+  .list_content4{
+    grid-area: seper2;
+  }
+  .list_content5{
+    grid-area: seper3;
+  }
+  .search_button{
+    grid-area: footer;
+  }
+ 
+  
 }
