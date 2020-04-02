@@ -4,11 +4,11 @@
  
  # 사용언어
    
-     * vue
-     * vuetify
-     * html
-     * css
-     * javascript
+     + vue
+     + vuetify
+     + html
+     + css
+     + javascript
      
  # 사용API
    * Rapid skyscanner api
