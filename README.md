@@ -25,8 +25,7 @@
    * 전체적인 반응형웹
    * 전체적인 UI/UX 검토 및 담당
     
-    
-# 실행방법
-  *cd mattina_project/fe/
-  *npm install
-  *npm run serve
+ # 실행방법
+  * cd mattina_project/fe/
+  * npm install
+  * npm run serve
