@@ -14,8 +14,7 @@
    * Rapid skyscanner api
    
 # 주요기능
-   * 항공권 검색
-   <br>
+   * 항공권 검색 <br>
    ![mattina1](https://user-images.githubusercontent.com/58238859/78314770-e7567000-7595-11ea-9fc9-a69fdd823763.gif)
 
       
