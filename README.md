@@ -3,7 +3,7 @@
  웹어플리케이션
  
  # 사용언어  
-  ## 프론트
+  ## front-End
    * vue
    * vuetify
    * html
@@ -12,7 +12,10 @@
      
  # 사용API
    * Rapid skyscanner api
-      
+   
+# 주요기능
+   * 항공권 검색
+   
       
 # 프로젝트 맴버
   ## 이정진
