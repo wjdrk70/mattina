@@ -18,8 +18,8 @@
   ![mattina3](https://user-images.githubusercontent.com/58238859/78316574-fab80a00-759a-11ea-8123-799487f04c09.gif)<br>
    * rapid skyscanner api 를 이용한 항공권 검색<br>
   ![mattina4](https://user-images.githubusercontent.com/58238859/78316692-436fc300-759b-11ea-966c-f4a6a2d6eff5.gif)<br>
-      * 항공권 리스트 페이지에서 다른 공항, 날짜, 인원 및 좌석 검색   
-      * 최저가, 최단시간, 빠른출국, 빠른귀국, 경유 검색
+   * 항공권 리스트 페이지에서 다른 공항, 날짜, 인원 및 좌석 검색   
+   * 최저가, 최단시간, 빠른출국, 빠른귀국, 경유 검색
    
 
       
