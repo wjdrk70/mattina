@@ -15,7 +15,7 @@
    
 # 주요기능
    * 항공권 검색 <br>
-   ![mattina1](https://user-images.githubusercontent.com/58238859/78314770-e7567000-7595-11ea-9fc9-a69fdd823763.gif)
+   ![mattina3](https://user-images.githubusercontent.com/58238859/78316574-fab80a00-759a-11ea-8123-799487f04c09.gif)
 
       
 # 프로젝트 맴버
